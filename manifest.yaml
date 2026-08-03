@@ -1,0 +1,21 @@
+
+tables:
+  - RP_ALL_OWNERS
+  - RP_ALL_SITE_ADDRESSES
+  - RP_BUILDING
+  - RP_EXEMPTIONS
+  - RP_EXTRA_FEATURES
+  - RP_INACTIVE_PARCEL_LIST
+  - RP_LAND
+  - RP_MILLAGE_RATES
+  - RP_MULTI_BUILDING_INFO
+  - RP_PROPERTY_INFO
+  - RP_SALES
+  - RP_STRUCTURAL_ELEMENTS
+  - RP_SUB_AREAS
+districts:
+  - name: city_districts
+    field: DISTRICTID
+    format: ST PETERSBURG DISTRICT %s
+    geojson:
+      - https://services2.arcgis.com/9qPLjNtocjo438CJ/arcgis/rest/services/CityCouncilDistricts_view/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson
