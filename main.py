@@ -7,10 +7,7 @@ import urllib.request
 
 import zipfile
 import io
-import sqlite3
 import csv
-
-from shapely import Point, Polygon
 
 from manifest import Manifest, Region
 from geojson import GeoJSON
@@ -18,12 +15,13 @@ from db_wrapper import DBWrapper
 
 paths = ['csvs', 'shapes']
 
+# Pinellas County Property Records Website
 csv_url = 'https://www.pcpao.gov/dal/databasefile/downloadDatabaseFile'
 headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:147.0) Gecko/20100101 Firefox/147.0)'}
 
-    
 
 def make_directory(path: str):
+  """Create a directory idempotently."""
   try:
     os.mkdir(path)
   except OSError as e:
@@ -31,6 +29,7 @@ def make_directory(path: str):
       raise e
 
 def initialize_csv(dbw: DBWrapper, manifest: Manifest, name: str):
+  """Idempotently download CSV files and import them into the database."""
   filename = f'csvs/{name}.csv'
   if not os.path.exists(filename):
     download_csv(name)
@@ -39,6 +38,7 @@ def initialize_csv(dbw: DBWrapper, manifest: Manifest, name: str):
       dbw.ingest_csv(manifest.property_field, name, csv.DictReader(fp))
 
 def download_csv(name: str):
+  """Download csv zips and extract them into the ./csvs/ directory."""
   print(f'Downloading {name}.csv')
   data = urllib.parse.urlencode({'hdn_tbl_name': name, 'hdn_ftype': 'csv'}).encode('utf-8')
   req = urllib.request.Request(csv_url, data, headers=headers)
@@ -48,6 +48,7 @@ def download_csv(name: str):
     archive.extractall(path='csvs')
 
 def download_shape(collection: str, name: str, url: str):
+  """Download geojson files."""
   filename = f'shapes/{collection}/{name}.json'
   if (os.path.exists(filename)):
     return filename
@@ -59,6 +60,10 @@ def download_shape(collection: str, name: str, url: str):
   return filename
 
 def setup_regions(dbw: DBWrapper, manifest: Manifest):
+  """
+  Iterate across regions, creating database records, instantiating geojson
+  data, and populate the manifest.
+  """
   for coll in manifest.district_collections:
     make_directory(f'shapes/{coll.name}')
     for district in coll.districts:
@@ -77,10 +82,11 @@ def setup_regions(dbw: DBWrapper, manifest: Manifest):
         ''', params).fetchone()[0]
         region = Region(rowid, label)
         for poly in feature.geometry.get_polygons():
-          region.polygons.append(Polygon(poly))
+          region.add_polygon(poly)
         district.regions.append(region)
 
 def scan_regions(dbw: DBWrapper, manifest: Manifest):
+  """Map regions to properties."""
   sql = 'INSERT INTO RegionedProperty (region, property) VALUES (?, ?)'
   for coll in manifest.district_collections:
     for district in coll.districts:
@@ -119,12 +125,11 @@ def main():
   with open('manifest.yaml', 'r') as fp:
     manifest = Manifest(**yaml.safe_load(fp))
 
-  with sqlite3.connect(manifest.database) as db:
-    dbw = DBWrapper(db)
+  with DBWrapper(manifest.database) as dbw:
     for table in manifest.tables:
       initialize_csv(dbw, manifest, table)
     setup_regions(dbw, manifest)
     scan_regions(dbw, manifest)
-  
+
 if __name__ == '__main__':
   main()

@@ -12,14 +12,22 @@ class DBWrapper:
     'Regions': '(id INTEGER PRIMARY KEY, collection VARCHAR, district VARCHAR, region VARCHAR, UNIQUE (collection, district, region))',
     'RegionedProperty': '(region INTEGER, property INTEGER, UNIQUE (region, property))',
   }
-  def __init__(self, db: sqlite3.Connection):
-    self.curr = db.cursor()
+  def __init__(self, database_path: str):
+    self.db = sqlite3.connect(database_path)
+
+    self.curr = self.db.cursor()
     for name, cols in self.create_tables.items():
       self.execute(f'CREATE TABLE IF NOT EXISTS {name} {cols}')
     self.properties = self.read_properties()
     self.tables = set([row[0] for row in self.execute(
       'SELECT name FROM sqlite_master WHERE type="table";'
     ).fetchall()])
+
+  def __enter__(self):
+    return self
+
+  def __exit__(self, *args):
+    self.db.close()
 
   def execute(self, sql: str, params: db_params = []):
     return self.curr.execute(sql, params)

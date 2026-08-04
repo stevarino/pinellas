@@ -21,6 +21,9 @@ class Region:
   polygons: list[Polygon] = field(default_factory=list)
   tests: int = 0
 
+  def add_polygon(self, polygon: list[tuple[float, float]]):
+    self.polygons.append(Polygon(polygon))
+
   def contains_point(self, latlong: tuple[float, float]):
     for polygon in self.polygons:
       self.tests += 1
