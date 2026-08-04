@@ -86,7 +86,7 @@ def setup_regions(dbw: DBWrapper, manifest: Manifest):
         district.regions.append(region)
 
 def scan_regions(dbw: DBWrapper, manifest: Manifest):
-  """Map regions to properties."""
+  """Map geojson defined regions to properties."""
   sql = 'INSERT INTO RegionedProperty (region, property) VALUES (?, ?)'
   for coll in manifest.district_collections:
     for district in coll.districts:
