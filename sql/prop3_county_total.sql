@@ -1,12 +1,17 @@
 /**
 Calculates the total tax impact of Prop 3
 
-sqlite3 -markdown -readonly pinellas_indexed.sqlite < sql/prop3_county_total.sql
-
-|     TAX_2026      |     TAX_2027      |     TAX_2028      |  TAX_2027_DIFF  |   TAX_2028_DIFF   |
-|-------------------|-------------------|-------------------|-----------------|-------------------|
-| $7,975,666,332.00 | $7,281,377,384.45 | $6,849,782,958.20 | $694,288,947.55 | $1,125,883,373.80 |
+sqlite3 -readonly pinellas_indexed.sqlite < sql/prop3_county_total.sql > sql/prop3_county_total.md
 */
+
+.headers off
+.mode column
+select "
+# County Totals
+
+";
+.headers on
+.mode markdown
 
 with totals as (
 	select 
