@@ -1,2 +1,5 @@
-**/*.csv
 **/*.sqlite*
+env
+shapes
+csvs
+__pycache__

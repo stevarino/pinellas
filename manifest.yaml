@@ -1,21 +1,27 @@
-
+database: pinellas_indexed.sqlite
+property_field: STRAP
+property_location:
+  table: RP_PROPERTY_INFO
+  lat: LATITUDE
+  lon: LONGITUDE
 tables:
-  - RP_ALL_OWNERS
-  - RP_ALL_SITE_ADDRESSES
+  # - RP_ALL_OWNERS
+  # - RP_ALL_SITE_ADDRESSES
   - RP_BUILDING
   - RP_EXEMPTIONS
-  - RP_EXTRA_FEATURES
-  - RP_INACTIVE_PARCEL_LIST
+  # - RP_EXTRA_FEATURES
+  # - RP_INACTIVE_PARCEL_LIST
   - RP_LAND
   - RP_MILLAGE_RATES
   - RP_MULTI_BUILDING_INFO
   - RP_PROPERTY_INFO
-  - RP_SALES
-  - RP_STRUCTURAL_ELEMENTS
+  # - RP_SALES
+  # - RP_STRUCTURAL_ELEMENTS
   - RP_SUB_AREAS
-districts:
+district_collections:
   - name: city_districts
-    field: DISTRICTID
-    format: ST PETERSBURG DISTRICT %s
-    geojson:
-      - https://services2.arcgis.com/9qPLjNtocjo438CJ/arcgis/rest/services/CityCouncilDistricts_view/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson
+    districts:
+    - name: sp
+      property_key: DISTRICTID
+      format: ST PETERSBURG DISTRICT %s
+      geojson: https://services2.arcgis.com/9qPLjNtocjo438CJ/arcgis/rest/services/CityCouncilDistricts_view/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson
