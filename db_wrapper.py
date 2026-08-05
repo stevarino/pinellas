@@ -1,7 +1,7 @@
 from itertools import batched
 import sqlite3
 
-from typing import Any, Iterable, Mapping, cast, Sequence
+from typing import Any, Iterable, Mapping, cast, Sequence, Self
 
 type db_field = str | float | int | bool
 type db_params = Sequence[db_field] | tuple[db_field]
@@ -12,10 +12,11 @@ class DBWrapper:
     'Regions': '(id INTEGER PRIMARY KEY, collection VARCHAR, district VARCHAR, region VARCHAR, UNIQUE (collection, district, region))',
     'RegionedProperty': '(region INTEGER, property INTEGER, UNIQUE (region, property))',
   }
-  def __init__(self, database_path: str):
-    self.db = sqlite3.connect(database_path)
+  def __init__(self, path: str):
+    self.db = sqlite3.connect(path)
+    self.cursor = self.db.cursor()
+    self.depth = 0
 
-    self.curr = self.db.cursor()
     for name, cols in self.create_tables.items():
       self.execute(f'CREATE TABLE IF NOT EXISTS {name} {cols}')
     self.properties = self.read_properties()
@@ -24,16 +25,20 @@ class DBWrapper:
     ).fetchall()])
 
   def __enter__(self):
+    self.depth += 1
     return self
 
-  def __exit__(self, *args):
-    self.db.close()
+  def __exit__(self, *_):
+    self.depth -= 1
+    self.db.commit()
+    if not self.depth:
+      self.db.close()
 
   def execute(self, sql: str, params: db_params = []):
-    return self.curr.execute(sql, params)
+    return self.cursor.execute(sql, params)
 
   def executemany(self, sql: str, rows: Iterable[db_params]):
-    return self.curr.executemany(sql, rows)
+    return self.cursor.executemany(sql, rows)
 
   def read_properties(self, ids: None|list[str] = None):
     sql = 'SELECT id, property FROM Properties'
@@ -41,7 +46,7 @@ class DBWrapper:
       sql += f' WHERE property IN ("{'", "'.join(ids)}")'
     return {
       row[1]: row[0] for row in 
-      self.curr.execute(sql).fetchall()
+      self.cursor.execute(sql).fetchall()
     }
 
   def insert_properties(self, properties: list[str]):
@@ -56,40 +61,41 @@ class DBWrapper:
     if table in self.tables:
       print('Already read table: ', table)
       return
+    print('Injesting table: ', table)
     self.tables.add(table)
+    with self:
+      fields = []
 
-    fields = []
+      cnt = 0
+      for i, rows in enumerate(batched(data, 100)):
+        
+        if i == 0:
+          for f in rows[0].keys():
+            if f not in fields:
+              fields.append(f)
 
-    cnt = 0
-    for i, rows in enumerate(batched(data, 100)):
-      
-      if i == 0:
-        for f in rows[0].keys():
-          if f not in fields:
-            fields.append(f)
+          field_defs = []
+          for field in fields:
+            if field == property_field:
+              field_defs.append(f'{field} INTEGER')
+            else:
+              field_defs.append(f'{field} VARCHAR')
+          self.execute(f'''
+            CREATE TABLE {table} ({','.join(field_defs)});
+          ''')
 
-        field_defs = []
-        for field in fields:
-          if field == property_field:
-            field_defs.append(f'{field} INTEGER')
-          else:
-            field_defs.append(f'{field} VARCHAR')
-        self.execute(f'''
-          CREATE TABLE {table} ({','.join(field_defs)});
-        ''')
+        insert_sql = f'INSERT INTO {table} ({','.join(fields)}) VALUES ({','.join(['?'] * len(fields))});'
 
-      insert_sql = f'INSERT INTO {table} ({','.join(fields)}) VALUES ({','.join(['?'] * len(fields))});'
+        if property_field in fields:
+          props = cast(list[str], [r[property_field] for r in rows])
+          self.insert_properties(props)
 
-      if property_field in fields:
-        props = cast(list[str], [r[property_field] for r in rows])
-        self.insert_properties(props)
-
-      cnt += len(rows)
-      inserts = []
-      for row in rows:
-        inserts.append([row[f] if f != property_field else self.properties[row[f]]
-                        for f in fields])
-      self.executemany(insert_sql, inserts)
+        cnt += len(rows)
+        inserts = []
+        for row in rows:
+          inserts.append([row[f] if f != property_field else self.properties[row[f]]
+                          for f in fields])
+        self.executemany(insert_sql, inserts)
 
     print(f'Inserted {cnt} rows')
     if property_field in fields:

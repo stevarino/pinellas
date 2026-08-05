@@ -13,7 +13,10 @@ from manifest import Manifest, Region
 from geojson import GeoJSON
 from db_wrapper import DBWrapper
 
-paths = ['csvs', 'shapes']
+
+CSV_DIR = 'csvs'
+GEOJSON_DIR = 'shapes'
+paths = [CSV_DIR, GEOJSON_DIR]
 
 # Pinellas County Property Records Website
 csv_url = 'https://www.pcpao.gov/dal/databasefile/downloadDatabaseFile'
@@ -30,7 +33,7 @@ def make_directory(path: str):
 
 def initialize_csv(dbw: DBWrapper, manifest: Manifest, name: str):
   """Idempotently download CSV files and import them into the database."""
-  filename = f'csvs/{name}.csv'
+  filename = f'{CSV_DIR}/{name}.csv'
   if not os.path.exists(filename):
     download_csv(name)
   if name not in dbw.tables:
@@ -38,18 +41,18 @@ def initialize_csv(dbw: DBWrapper, manifest: Manifest, name: str):
       dbw.ingest_csv(manifest.property_field, name, csv.DictReader(fp))
 
 def download_csv(name: str):
-  """Download csv zips and extract them into the ./csvs/ directory."""
+  """Download csv zips and extract them into the csv directory."""
   print(f'Downloading {name}.csv')
   data = urllib.parse.urlencode({'hdn_tbl_name': name, 'hdn_ftype': 'csv'}).encode('utf-8')
   req = urllib.request.Request(csv_url, data, headers=headers)
   with urllib.request.urlopen(req) as res:
     stream = io.BytesIO(res.read())
   with zipfile.ZipFile(stream, 'r') as archive:
-    archive.extractall(path='csvs')
+    archive.extractall(path=CSV_DIR)
 
 def download_shape(collection: str, name: str, url: str):
   """Download geojson files."""
-  filename = f'shapes/{collection}/{name}.json'
+  filename = f'{GEOJSON_DIR}/{collection}/{name}.json'
   if (os.path.exists(filename)):
     return filename
   print(f'Downloading {filename}')
@@ -65,7 +68,7 @@ def setup_regions(dbw: DBWrapper, manifest: Manifest):
   data, and populate the manifest.
   """
   for coll in manifest.district_collections:
-    make_directory(f'shapes/{coll.name}')
+    make_directory(f'{GEOJSON_DIR}/{coll.name}')
     for district in coll.districts:
       filename = download_shape(coll.name, district.name, district.geojson)
       with open(filename, 'r') as fp:
