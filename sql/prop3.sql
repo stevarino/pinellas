@@ -7,10 +7,10 @@ sqlite3 -readonly pinellas_indexed.sqlite < sql/prop3_city_districts.sql > sql/p
 
 .headers off
 .mode column
-select "
+select '
 # County Totals
 
-";
+';
 .headers on
 .mode markdown
 
@@ -22,11 +22,11 @@ with totals as (
 	from PROP_3
 )
 SELECT 
-	format("$%,.2f", TAX_2026) AS TAX_2026,
-	format("$%,.2f", TAX_2027) AS TAX_2027,
-	format("$%,.2f", TAX_2028) AS TAX_2028,
-	format("$%,.2f", TAX_2026 - TAX_2027) AS TAX_2027_DIFF,
-	format("$%,.2f", TAX_2026 - TAX_2028) AS TAX_2028_DIFF
+	format('$%,.2f', TAX_2026) AS TAX_2026,
+	format('$%,.2f', TAX_2027) AS TAX_2027,
+	format('$%,.2f', TAX_2028) AS TAX_2028,
+	format('$%,.2f', TAX_2026 - TAX_2027) AS TAX_2027_DIFF,
+	format('$%,.2f', TAX_2026 - TAX_2028) AS TAX_2028_DIFF
 FROM totals;
 
 CREATE TEMP TABLE totals AS SELECT 
@@ -52,19 +52,19 @@ GROUP BY 1;
 
 .headers off
 .mode column
-select "
+select '
 # District Tax Loss
 
-";
+';
 .headers on
 .mode markdown
 
 SELECT district,
-  format("%d", total_units) as units,
-  format("%,.2f", total_loss_2027) as total_loss_2027,
-  format("%,.2f", total_loss_2028) as total_loss_2028,
-  format("%,.2f", loss_2027) as loss_2027,
-  format("%,.2f", loss_2028) as loss_2028
+  format('%d', total_units) as units,
+  format('%,.2f', total_loss_2027) as total_loss_2027,
+  format('%,.2f', total_loss_2028) as total_loss_2028,
+  format('%,.2f', loss_2027) as loss_2027,
+  format('%,.2f', loss_2028) as loss_2028
 FROM district_tax_loss_by_household;
 
 CREATE TEMP TABLE district_totals AS SELECT
@@ -79,51 +79,51 @@ INNER JOIN district_tax_loss_by_household AS cl
 
 .headers off
 .mode column
-select "
+select '
 # District Tax Impact
 
-";
+';
 .headers on
 .mode markdown
 
 SELECT
   region as District,
   format('%d', units) as Households,
-	format("%,.2f", savings_2027) AS "Tax Reduction 2027",
-	format("%,.2f", savings_2028) AS "Tax Reduction 2028",
-  format("%,.2f", makeup_2027) AS "Tax Makeup 2027",
-  format("%,.2f", makeup_2028) AS "Tax Makeup 2028",
-  format("%,.2f", makeup_2027 - savings_2027) AS "Impact 2027",
-  format("%,.2f", makeup_2028 - savings_2028) AS "Impact 2028"
+	format('%,.2f', savings_2027) AS 'Tax Reduction 2027',
+	format('%,.2f', savings_2028) AS 'Tax Reduction 2028',
+  format('%,.2f', makeup_2027) AS 'Tax Makeup 2027',
+  format('%,.2f', makeup_2028) AS 'Tax Makeup 2028',
+  format('%,.2f', makeup_2027 - savings_2027) AS 'Impact 2027',
+  format('%,.2f', makeup_2028 - savings_2028) AS 'Impact 2028'
 FROM district_totals;
 
 
 .headers off
 .mode column
-select "
+select '
 # District Total Impact
 
-";
+';
 .headers on
 .mode markdown
 
 SELECT
   region as District,
-  format("%,.2f", (makeup_2027 - savings_2027) ) AS "Impact 2027",
-  format("%,.2f", (makeup_2028 - savings_2028) ) AS "Impact 2028"
+  format('%,.2f', (makeup_2027 - savings_2027) ) AS 'Impact 2027',
+  format('%,.2f', (makeup_2028 - savings_2028) ) AS 'Impact 2028'
 FROM district_totals;
 
 
 .headers off
 .mode column
-select "
+select '
 # District Household Impact
 
-";
+';
 .headers on
 .mode markdown
 SELECT
   region as District,
-  format("%,.2f", (makeup_2027 - savings_2027) / units ) AS "Impact 2027",
-  format("%,.2f", (makeup_2028 - savings_2028) / units ) AS "Impact 2028"
+  format('%,.2f', (makeup_2027 - savings_2027) / units ) AS 'Impact 2027',
+  format('%,.2f', (makeup_2028 - savings_2028) / units ) AS 'Impact 2028'
 FROM district_totals;
