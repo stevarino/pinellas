@@ -6,7 +6,8 @@ sqlite3 -readonly pinellas_indexed.sqlite < sql/prop3_city_districts.sql > sql/p
 */
 
 .headers off
-.mode column
+.mode list
+
 select '
 # County Totals
 
@@ -51,7 +52,8 @@ from totals
 GROUP BY 1;
 
 .headers off
-.mode column
+.mode list
+
 select '
 # District Tax Loss
 
@@ -60,7 +62,7 @@ select '
 .mode markdown
 
 SELECT district,
-  format('%d', total_units) as units,
+  format('%,d', total_units) as units,
   format('%,.2f', total_loss_2027) as total_loss_2027,
   format('%,.2f', total_loss_2028) as total_loss_2028,
   format('%,.2f', loss_2027) as loss_2027,
@@ -78,7 +80,8 @@ INNER JOIN district_tax_loss_by_household AS cl
   ON t.district = cl.district;
 
 .headers off
-.mode column
+.mode list
+
 select '
 # District Tax Impact
 
@@ -88,7 +91,7 @@ select '
 
 SELECT
   region as District,
-  format('%d', units) as Households,
+  format('%,d', units) as Households,
 	format('%,.2f', savings_2027) AS 'Tax Reduction 2027',
 	format('%,.2f', savings_2028) AS 'Tax Reduction 2028',
   format('%,.2f', makeup_2027) AS 'Tax Makeup 2027',
@@ -99,7 +102,8 @@ FROM district_totals;
 
 
 .headers off
-.mode column
+.mode list
+
 select '
 # District Total Impact
 
@@ -115,7 +119,8 @@ FROM district_totals;
 
 
 .headers off
-.mode column
+.mode list
+
 select '
 # District Household Impact
 
