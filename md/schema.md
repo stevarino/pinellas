@@ -1,5 +1,5 @@
 |         table          |         column          |  type   |
-|------------------------|-------------------------|---------|
+|------------------------| ----------------------: | ------: |
 | PROP_3                 | CNTY_TAXABLE_VALUE      | TEXT    |
 | PROP_3                 | CNTY_TAXABLE_VALUE_2027 |         |
 | PROP_3                 | CNTY_TAXABLE_VALUE_2028 |         |
