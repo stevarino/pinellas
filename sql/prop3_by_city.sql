@@ -111,39 +111,39 @@ SELECT city,
   format('%,.2f', sfh_savings_2028) as 'SFH Savings 2028'
 FROM city_loss_by_household ORDER BY row_no;
 
-.headers off
-.mode list
+-- .headers off
+-- .mode list
 
-select '
-# City Tax Loss and Makeup
+-- select '
+-- # City Tax Loss and Makeup
 
-';
-.headers on
-.mode markdown
+-- ';
+-- .headers on
+-- .mode markdown
 
-SELECT
-  city,
-  format('%,d', properties) as Properties,
-  format('%,d', households) as Households,
-	format('%,.2f', tax_diff_2027) AS 'Tax Loss 2027',
-  format('%,.2f', makeup_2027) AS 'Tax Makeup 2027',
-  format('%,.2f', makeup_2027 - tax_diff_2027) AS 'Net 2027',
-	format('%,.2f', tax_diff_2028) AS 'Tax Loss 2028',
-  format('%,.2f', makeup_2028) AS 'Tax Makeup 2028',
-  format('%,.2f', makeup_2028 - tax_diff_2028) AS 'Net 2028'
-FROM city_loss_by_household ORDER BY row_no;
+-- SELECT
+--   city,
+--   format('%,d', properties) as Properties,
+--   format('%,d', households) as Households,
+-- 	format('%,.2f', tax_diff_2027) AS 'Tax Loss 2027',
+--   format('%,.2f', makeup_2027) AS 'Tax Makeup 2027',
+--   format('%,.2f', makeup_2027 - tax_diff_2027) AS 'Net 2027',
+-- 	format('%,.2f', tax_diff_2028) AS 'Tax Loss 2028',
+--   format('%,.2f', makeup_2028) AS 'Tax Makeup 2028',
+--   format('%,.2f', makeup_2028 - tax_diff_2028) AS 'Net 2028'
+-- FROM city_loss_by_household ORDER BY row_no;
 
-.headers off
-.mode list
+-- .headers off
+-- .mode list
 
-select '
-# City Household Impact
+-- select '
+-- # City Household Impact
 
-';
-.headers on
-.mode markdown
-SELECT
-  city, 
-  format('%,.2f', (makeup_2027 - tax_diff_2027) / households ) AS 'HH Impact 2027',
-  format('%,.2f', (makeup_2028 - tax_diff_2028) / households ) AS 'HH Impact 2028'
-FROM city_loss_by_household;
+-- ';
+-- .headers on
+-- .mode markdown
+-- SELECT
+--   city, 
+--   format('%,.2f', (makeup_2027 - tax_diff_2027) / households ) AS 'HH Impact 2027',
+--   format('%,.2f', (makeup_2028 - tax_diff_2028) / households ) AS 'HH Impact 2028'
+-- FROM city_loss_by_household;
