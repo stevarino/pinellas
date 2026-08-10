@@ -3,7 +3,19 @@
 | PROP_3                 | CNTY_TAXABLE_VALUE      | TEXT    |
 | PROP_3                 | CNTY_TAXABLE_VALUE_2027 |         |
 | PROP_3                 | CNTY_TAXABLE_VALUE_2028 |         |
+| PROP_3                 | CNTY_TAX_2026           |         |
+| PROP_3                 | CNTY_TAX_2027           |         |
+| PROP_3                 | CNTY_TAX_2028           |         |
+| PROP_3                 | MUNI_TAXABLE_VALUE      | TEXT    |
+| PROP_3                 | MUNI_TAXABLE_VALUE_2027 |         |
+| PROP_3                 | MUNI_TAXABLE_VALUE_2028 |         |
+| PROP_3                 | MUNI_TAX_2026           |         |
+| PROP_3                 | MUNI_TAX_2027           |         |
+| PROP_3                 | MUNI_TAX_2028           |         |
 | PROP_3                 | SCHL_TAXABLE_VALUE      | TEXT    |
+| PROP_3                 | SCHL_TAX_2026           |         |
+| PROP_3                 | SCHL_TAX_2027           |         |
+| PROP_3                 | SCHL_TAX_2028           |         |
 | PROP_3                 | TAX_2026                |         |
 | PROP_3                 | TAX_2027                |         |
 | PROP_3                 | TAX_2028                |         |
