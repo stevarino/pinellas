@@ -9,8 +9,8 @@ CREATE TEMP TABLE cities AS
 WITH _cities AS (
   select
     CASE 
-      WHEN city = "" THEN "n/a" 
-      WHEN city = "ST. PETERSBURG" THEN "ST PETERSBURG"
+      WHEN city = '' THEN 'n/a' 
+      WHEN city = 'ST. PETERSBURG' THEN 'ST PETERSBURG'
       ELSE city 
     END AS city,
     count(*) as properties,
@@ -29,7 +29,7 @@ WITH _cities AS (
 CREATE TEMP TABLE totals AS
 SELECT
   -1 as row_no,
-  "Pinellas County" as city,
+  'Pinellas County' as city,
   count(*) as properties,
   sum(units) as households,
   sum(CASE WHEN units = 1 THEN 1 ELSE 0 END) as sfh,
@@ -63,7 +63,7 @@ SELECT
   format('%,d', properties) as properties,
   format('%,d', households) as households,
   format('%,d', sfh) as SFH,
-  format('%.2f%', pct_sfh) as "Pct SFH",
+  format('%.2f%', pct_sfh) as 'Pct SFH',
 	format('$%,.2f', TAX_2026) AS TAX_2026,
 	format('$%,.2f', TAX_2027) AS TAX_2027,
 	format('$%,.2f', TAX_2026 - TAX_2027) AS TAX_2027_DIFF,

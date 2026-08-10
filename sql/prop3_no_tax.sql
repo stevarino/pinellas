@@ -16,7 +16,7 @@ CREATE TEMP TABLE p3 AS
     CNTY_TAXABLE_VALUE_2028,
     city
   FROM PROP_3 AS p3 INNER JOIN Residences AS r ON r.property = p3.property
-  WHERE homestead = "Yes";
+  WHERE homestead = 'Yes';
 
 CREATE TEMP TABLE costs AS 
 SELECT
@@ -28,7 +28,7 @@ SELECT
 FROM p3 GROUP BY 1;
 
 SELECT
-  "Pinellas County" as city,
+  'Pinellas County' as city,
   sum(units) as units,
   sum(VAL_0_2026) as '2026',
   sum(VAL_0_2027) as '2027',
@@ -36,11 +36,11 @@ SELECT
   FROM costs
 UNION ALL
 SELECT 
-  CASE WHEN city = "" THEN "n/a" ELSE city END as city,
+  CASE WHEN city = '' THEN 'n/a' ELSE city END as city,
   units,
-  Format("%,3d", VAL_0_2026) as '2026',
-  Format("%,3d", VAL_0_2027) as '2027',
-  Format("%,3d", VAL_0_2028) as '2028'
+  Format('%,3d', VAL_0_2026) as '2026',
+  Format('%,3d', VAL_0_2027) as '2027',
+  Format('%,3d', VAL_0_2028) as '2028'
 FROM costs GROUP BY 1;
 
 .headers off
@@ -58,19 +58,19 @@ WITH total AS (
   SELECT city, Count(*) as cnt FROM p3 GROUP BY 1
 )
 SELECT 
-  "Pinellas County" as city,
+  'Pinellas County' as city,
   sum(units) as units,
-  Format("%.2f%", 100.0 * Sum(VAL_0_2026) / Sum(units)) as '2026',
-  Format("%.2f%", 100.0 * Sum(VAL_0_2027) / Sum(units)) as '2027',
-  Format("%.2f%", 100.0 * Sum(VAL_0_2028) / Sum(units)) as '2028'
+  Format('%.2f%', 100.0 * Sum(VAL_0_2026) / Sum(units)) as '2026',
+  Format('%.2f%', 100.0 * Sum(VAL_0_2027) / Sum(units)) as '2027',
+  Format('%.2f%', 100.0 * Sum(VAL_0_2028) / Sum(units)) as '2028'
 FROM costs
 UNION ALL
 SELECT 
-  CASE WHEN costs.city = "" THEN "n/a" ELSE costs.city END as city,
+  CASE WHEN costs.city = '' THEN 'n/a' ELSE costs.city END as city,
   units,
-  Format("%.2f%", 100.0 * VAL_0_2026 / cnt) as '2026',
-  Format("%.2f%", 100.0 * VAL_0_2027 / cnt) as '2027',
-  Format("%.2f%", 100.0 * VAL_0_2028 / cnt) as '2027'
+  Format('%.2f%', 100.0 * VAL_0_2026 / cnt) as '2026',
+  Format('%.2f%', 100.0 * VAL_0_2027 / cnt) as '2027',
+  Format('%.2f%', 100.0 * VAL_0_2028 / cnt) as '2027'
 FROM costs INNER JOIN total ON costs.city = total.city
 WHERE VAL_0_2026 <> 0 OR VAL_0_2027 <> 0 OR VAL_0_2028 <> 0
 GROUP BY 1;
